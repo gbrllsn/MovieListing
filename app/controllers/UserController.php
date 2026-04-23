@@ -87,9 +87,9 @@ class UserController {
             }
 
             // Set session data
-            $this->setUserSession($user['id'], $user['username']);
+            $this->setUserSession($user['id'], $user['username'], $user['is_admin']);
 
-            return ['success' => true, 'message' => 'Login successful', 'username' => $user['username']];
+            return ['success' => true, 'message' => 'Login successful', 'username' => $user['username'], 'user_id' => $user['id'], 'is_admin' => (bool)$user['is_admin']];
 
         } catch (Exception $e) {
             error_log("Login error: " . $e->getMessage());
@@ -204,7 +204,7 @@ class UserController {
      * @return array|null User data or null
      */
     private function getUserByEmail($email) {
-        $stmt = $this->pdo->prepare("SELECT id, username, password FROM users WHERE email = ?");
+        $stmt = $this->pdo->prepare("SELECT id, username, password, is_admin FROM users WHERE email = ?");
         $stmt->execute([$email]);
         return $stmt->fetch();
     }
@@ -224,10 +224,12 @@ class UserController {
      * Set user session data
      * @param int $id
      * @param string $username
+     * @param bool $isAdmin
      */
-    private function setUserSession($id, $username) {
+    private function setUserSession($id, $username, $isAdmin = false) {
         $_SESSION['user_id'] = $id;
         $_SESSION['username'] = $username;
+        $_SESSION['is_admin'] = (bool)$isAdmin;
     }
 }
 

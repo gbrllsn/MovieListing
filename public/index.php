@@ -187,46 +187,6 @@
             overflow: hidden;
         }
 
-        .movie-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .rating-badge {
-            background: linear-gradient(135deg, var(--secondary-color), #d97706);
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.875rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-        }
-
-        .action-btn {
-            background: var(--primary-color);
-            border: none;
-            border-radius: 25px;
-            padding: 0.5rem 1rem;
-            font-size: 0.875rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            color: white;
-        }
-
-        .action-btn:hover {
-            background: var(--primary-dark);
-            transform: translateY(-1px);
-            color: white;
-        }
-
-        .action-btn:disabled {
-            background: var(--border-color);
-            cursor: not-allowed;
-        }
-
         .loading-spinner {
             display: inline-block;
             width: 20px;
@@ -239,23 +199,6 @@
 
         @keyframes spin {
             to { transform: rotate(360deg); }
-        }
-
-        .skeleton {
-            background: linear-gradient(90deg, var(--border-color) 25%, rgba(255,255,255,0.1) 50%, var(--border-color) 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-            border-radius: 8px;
-        }
-
-        @keyframes loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-
-        .skeleton-card {
-            height: 400px;
-            margin-bottom: 2rem;
         }
 
         .dashboard-card {
@@ -361,6 +304,41 @@
             border: 1px solid rgba(245, 158, 11, 0.3);
         }
 
+        .genre-btn.active {
+            background: var(--primary-color) !important;
+            color: white !important;
+            border-color: var(--primary-color) !important;
+        }
+
+        .user-panel {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid var(--border-color);
+            border-radius: 999px;
+            padding: 0.55rem 1rem;
+        }
+
+        .user-panel .nav-link,
+        .user-panel .user-name {
+            color: white !important;
+            margin: 0;
+            padding: 0;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .user-panel .nav-link:hover {
+            color: var(--primary-color) !important;
+        }
+
+        .empty-results {
+            text-align: center;
+            color: var(--text-secondary);
+            padding: 3rem 1rem;
+        }
+
         @media (max-width: 768px) {
             .hero-title {
                 font-size: 2.5rem;
@@ -387,10 +365,9 @@
     </style>
 </head>
 <body>
-    <!-- Navigation -->
     <nav class="navbar navbar-expand-lg">
         <div class="container">
-            <a class="navbar-brand" href="#">
+            <a class="navbar-brand" href="index.php">
                 <i class="fas fa-film me-2"></i>
                 MovieList
             </a>
@@ -402,7 +379,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link active" href="#">Home</a>
+                        <a class="nav-link active" href="index.php">Home</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">Movies</a>
@@ -417,14 +394,14 @@
                     <i class="fas fa-search search-icon"></i>
                 </div>
 
-                <ul class="navbar-nav right-nav">
+                <ul class="navbar-nav right-nav" id="rightNav">
                     <li class="nav-item">
                         <button class="btn btn-custom me-2" id="loginBtn">
                             <i class="fas fa-sign-in-alt me-1"></i>Login
                         </button>
                     </li>
                     <li class="nav-item">
-                        <button class="btn btn-outline-light" id="signupBtn">
+                        <button class="btn btn-outline-light" id="signupBtn" style="padding: 0.75rem 2rem;">
                             <i class="fas fa-user-plus me-1"></i>Sign Up
                         </button>
                     </li>
@@ -433,7 +410,6 @@
         </div>
     </nav>
 
-    <!-- Hero Section for Guest Users -->
     <section class="hero-section" id="guestContent">
         <div class="container">
             <div class="row align-items-center">
@@ -457,21 +433,25 @@
             </div>
         </div>
     </section>
-    <!-- Main Content Container -->
+
     <div class="container">
-        <!-- Movies Grid -->
-        <div class="row" id="moviesContainer">
-            <!-- Movies will be loaded here -->
+        <div class="mb-4 text-center" id="genreFilterBar">
+            <button class="btn btn-outline-warning m-1 genre-btn active" data-genre="">All</button>
+            <button class="btn btn-outline-light m-1 genre-btn" data-genre="28">Action</button>
+            <button class="btn btn-outline-light m-1 genre-btn" data-genre="35">Comedy</button>
+            <button class="btn btn-outline-light m-1 genre-btn" data-genre="18">Drama</button>
+            <button class="btn btn-outline-light m-1 genre-btn" data-genre="27">Horror</button>
+            <button class="btn btn-outline-light m-1 genre-btn" data-genre="10749">Romance</button>
         </div>
 
-        <!-- User Dashboard (Hidden by default) -->
+        <div class="row" id="moviesContainer"></div>
+
         <div id="userContent" style="display: none;">
             <div class="row">
                 <div class="col-12">
                     <h1 class="welcome-message" id="welcomeMessage">Welcome back!</h1>
                     <p class="text-secondary mb-4">Here's what's happening with your movie collection</p>
 
-                    <!-- Stats Cards -->
                     <div class="row mb-4">
                         <div class="col-md-4 mb-3">
                             <div class="dashboard-card text-center">
@@ -493,7 +473,6 @@
                         </div>
                     </div>
 
-                    <!-- Watchlist Preview -->
                     <div class="dashboard-card mb-4">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h4 class="mb-0">
@@ -504,12 +483,9 @@
                                 <i class="fas fa-arrow-right me-1"></i>View All
                             </a>
                         </div>
-                        <div class="row" id="watchlistPreview">
-                            <!-- Watchlist preview will be loaded here -->
-                        </div>
+                        <div class="row" id="watchlistPreview"></div>
                     </div>
 
-                    <!-- Recently Watched -->
                     <div class="dashboard-card mb-4">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h4 class="mb-0">
@@ -520,12 +496,9 @@
                                 <i class="fas fa-arrow-right me-1"></i>View All
                             </a>
                         </div>
-                        <div class="row" id="recentlyWatched">
-                            <!-- Recently watched movies will be loaded here -->
-                        </div>
+                        <div class="row" id="recentlyWatched"></div>
                     </div>
 
-                    <!-- Popular This Week -->
                     <div class="dashboard-card">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h4 class="mb-0">
@@ -533,16 +506,13 @@
                                 Trending Now
                             </h4>
                         </div>
-                        <div class="row" id="popularPreview">
-                            <!-- Popular movies preview will be loaded here -->
-                        </div>
+                        <div class="row" id="popularPreview"></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Login Modal -->
     <div class="modal fade" id="loginModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -583,7 +553,6 @@
         </div>
     </div>
 
-    <!-- Signup Modal -->
     <div class="modal fade" id="signupModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -635,33 +604,52 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        const TMDB_API_KEY = 'YOUR_TMDB_API_KEY'; // Replace with actual API key
+        const TMDB_API_KEY = 'YOUR_TMDB_API_KEY';
         const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
         const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
         let currentUser = null;
+        let selectedGenre = '';
 
         $(document).ready(function() {
+            initializeEventHandlers();
             checkLoginStatus();
+            loadPopularMovies();
+        });
 
-            $('#loginBtn').click(function(e) {
+        function initializeEventHandlers() {
+            $(document).on('click', '#loginBtn', function(e) {
                 e.preventDefault();
+                $('#loginAlert').hide().text('');
                 $('#loginModal').modal('show');
             });
 
-            $('#signupBtn').click(function(e) {
+            $(document).on('click', '#signupBtn, #signupHeroBtn', function(e) {
                 e.preventDefault();
+                $('#signupAlert').hide().text('');
                 $('#signupModal').modal('show');
             });
 
-            $('#loginForm').submit(function(e) {
+            $('#loginForm').on('submit', function(e) {
                 e.preventDefault();
                 login();
             });
 
-            $('#signupForm').submit(function(e) {
+            $('#signupForm').on('submit', function(e) {
                 e.preventDefault();
                 register();
+            });
+
+            $(document).on('click', '#switchToSignup', function(e) {
+                e.preventDefault();
+                $('#loginModal').modal('hide');
+                setTimeout(() => $('#signupModal').modal('show'), 200);
+            });
+
+            $(document).on('click', '#switchToLogin', function(e) {
+                e.preventDefault();
+                $('#signupModal').modal('hide');
+                setTimeout(() => $('#loginModal').modal('show'), 200);
             });
 
             $(document).on('click', '#logoutBtn', function(e) {
@@ -670,7 +658,7 @@
             });
 
             $('#searchInput').on('input', function() {
-                const query = $(this).val();
+                const query = $(this).val().trim();
                 if (query.length > 2) {
                     searchMovies(query);
                 } else if (query.length === 0) {
@@ -678,25 +666,60 @@
                 }
             });
 
-            // Delegate event for dynamically added buttons
-            $(document).on('click', '.add-to-watchlist', function() {
+            $(document).on('click', '.add-to-watchlist', function(e) {
+                e.preventDefault();
                 const movieData = $(this).data('movie');
-                addToWatchlist(movieData);
+                addToWatchlist(movieData, this);
             });
-        });
+
+            $(document).on('click', '.login-to-add-btn', function(e) {
+                e.preventDefault();
+                $('#loginAlert').hide().text('');
+                $('#loginModal').modal('show');
+            });
+
+            $(document).on('click', '.genre-btn', function(e) {
+                e.preventDefault();
+
+                $('.genre-btn').removeClass('active btn-outline-warning').addClass('btn-outline-light');
+                $(this).addClass('active');
+
+                const genreValue = $(this).data('genre');
+                if (genreValue === '') {
+                    selectedGenre = '';
+                    $(this).removeClass('btn-outline-light').addClass('btn-outline-warning');
+                } else {
+                    selectedGenre = String(genreValue);
+                }
+
+                loadPopularMovies();
+            });
+
+            $('#exploreBtn').on('click', function(e) {
+                e.preventDefault();
+                $('html, body').animate({
+                    scrollTop: $('#genreFilterBar').offset().top - 30
+                }, 500);
+            });
+        }
 
         function checkLoginStatus() {
             $.get('../app/controllers/UserController.php?action=current_user', function(data) {
                 if (data.logged_in) {
-                    currentUser = data;
+                    currentUser = {
+                        logged_in: true,
+                        user_id: data.user_id,
+                        username: data.username,
+                        is_admin: data.is_admin
+                    };
                     showUserContent();
                 } else {
                     currentUser = null;
                     showGuestContent();
                 }
                 updateUI();
-            }).fail(function() {
-                console.error('Failed to check login status');
+            }, 'json').fail(function() {
+                currentUser = null;
                 showGuestContent();
                 updateUI();
             });
@@ -705,7 +728,6 @@
         function showGuestContent() {
             $('#guestContent').show();
             $('#userContent').hide();
-            loadPopularMovies();
         }
 
         function showUserContent() {
@@ -717,24 +739,53 @@
         }
 
         function updateUI() {
+            const rightNav = $('#rightNav');
+            rightNav.empty();
+
             if (currentUser) {
-                $('#loginBtn, #signupBtn').hide();
-                $('.right-nav').append('<li class="nav-item"><a class="nav-link" href="profile.php"><i class="fas fa-user me-1"></i>Profile</a></li>');
-                $('.right-nav').append('<li class="nav-item"><a class="nav-link" href="#" id="logoutBtn"><i class="fas fa-sign-out-alt me-1"></i>Logout</a></li>');
-                $('.right-nav').append('<li class="nav-item"><span class="nav-link"><i class="fas fa-user-check me-1"></i>' + currentUser.username + '</span></li>');
                 $('.search-container').hide();
+
+                const adminBadge = currentUser.is_admin
+                    ? '<span class="badge bg-warning text-dark">Admin</span>'
+                    : '';
+
+                rightNav.append(`
+                    <li class="nav-item">
+                        <div class="user-panel">
+                            <a class="nav-link" href="profile.php">
+                                <i class="fas fa-user me-1"></i>Profile
+                            </a>
+                            <a class="nav-link" href="#" id="logoutBtn">
+                                <i class="fas fa-sign-out-alt me-1"></i>Logout
+                            </a>
+                            <span class="user-name">
+                                <i class="fas fa-user-check me-1"></i>${currentUser.username} ${adminBadge}
+                            </span>
+                        </div>
+                    </li>
+                `);
             } else {
-                $('#logoutBtn').parent().remove();
-                $('a[href="profile.php"]').parent().remove();
-                $('span').filter(function() { return $(this).text().match(/^[\s]*\w+[\s]*$/) && currentUser.username && $(this).text().includes(currentUser.username); }).parent().remove();
-                $('#loginBtn, #signupBtn').show();
                 $('.search-container').show();
+
+                rightNav.append(`
+                    <li class="nav-item">
+                        <button class="btn btn-custom me-2" id="loginBtn">
+                            <i class="fas fa-sign-in-alt me-1"></i>Login
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="btn btn-outline-light" id="signupBtn" style="padding: 0.75rem 2rem;">
+                            <i class="fas fa-user-plus me-1"></i>Sign Up
+                        </button>
+                    </li>
+                `);
             }
         }
 
         function login() {
-            const email = $('#loginEmail').val();
+            const email = $('#loginEmail').val().trim();
             const password = $('#loginPassword').val();
+            const alertBox = $('#loginAlert');
 
             $.post('../app/controllers/UserController.php', {
                 action: 'login',
@@ -742,22 +793,23 @@
                 password: password
             }, function(data) {
                 if (data.success) {
-                    currentUser = {username: data.username, logged_in: true};
-                    updateUI();
+                    $('#loginForm')[0].reset();
+                    alertBox.hide().text('');
                     $('#loginModal').modal('hide');
-                    alert('Login successful');
+                    checkLoginStatus();
                 } else {
-                    alert(data.message);
+                    alertBox.removeClass('alert-success alert-warning').addClass('alert alert-danger').text(data.message).show();
                 }
             }, 'json').fail(function() {
-                alert('Login failed: Server error');
+                alertBox.removeClass('alert-success alert-warning').addClass('alert alert-danger').text('Login failed. Please try again.').show();
             });
         }
 
         function register() {
-            const username = $('#signupUsername').val();
-            const email = $('#signupEmail').val();
+            const username = $('#signupUsername').val().trim();
+            const email = $('#signupEmail').val().trim();
             const password = $('#signupPassword').val();
+            const alertBox = $('#signupAlert');
 
             $.post('../app/controllers/UserController.php', {
                 action: 'register',
@@ -766,35 +818,30 @@
                 password: password
             }, function(data) {
                 if (data.success) {
-                    $('#signupModal').modal('hide');
-                    alert('Registration successful. Please login.');
+                    $('#signupForm')[0].reset();
+                    alertBox.removeClass('alert-danger alert-warning').addClass('alert alert-success').text('Registration successful! Please login.').show();
+                    setTimeout(() => {
+                        $('#signupModal').modal('hide');
+                        $('#loginModal').modal('show');
+                    }, 1200);
                 } else {
-                    alert(data.message);
+                    alertBox.removeClass('alert-success alert-warning').addClass('alert alert-danger').text(data.message).show();
                 }
             }, 'json').fail(function() {
-                alert('Registration failed: Server error');
+                alertBox.removeClass('alert-success alert-warning').addClass('alert alert-danger').text('Registration failed. Please try again.').show();
             });
         }
 
         function logout() {
-            $.post('../app/controllers/UserController.php', { action: 'logout' }, function(data) {
-                // Clear user credentials
+            $.post('../app/controllers/UserController.php', { action: 'logout' }, function() {
                 currentUser = null;
-                
-                // Clear any stored auth data
                 localStorage.removeItem('movieListUser');
                 sessionStorage.removeItem('movieListUser');
-                
-                // Show success message and redirect
-                alert('You have been logged out successfully');
                 window.location.href = 'index.php';
             }, 'json').fail(function() {
-                // Even if logout fails, clear local data and redirect
                 currentUser = null;
                 localStorage.removeItem('movieListUser');
                 sessionStorage.removeItem('movieListUser');
-                
-                alert('Logout completed. Redirecting to home...');
                 window.location.href = 'index.php';
             });
         }
@@ -814,9 +861,7 @@
                 if (data.success) {
                     displayMoviesPreview(data.movies.slice(0, 6), 'watchlistPreview');
                 }
-            }, 'json').fail(function() {
-                console.error('Failed to load watchlist');
-            });
+            }, 'json');
         }
 
         function loadRecentlyWatched() {
@@ -825,13 +870,10 @@
                 status: 'watched'
             }, function(data) {
                 if (data.success) {
-                    // Sort by date_watched desc
                     data.movies.sort((a, b) => new Date(b.date_watched || 0) - new Date(a.date_watched || 0));
                     displayMoviesPreview(data.movies.slice(0, 6), 'recentlyWatched');
                 }
-            }, 'json').fail(function() {
-                console.error('Failed to load recently watched');
-            });
+            }, 'json');
         }
 
         function loadUserStats() {
@@ -845,13 +887,12 @@
                         else if (movie.status === 'watched') stats.watched++;
                         else if (movie.status === 'watching') stats.watching++;
                     });
+
                     $('#watchlistCount').text(stats.watchlist);
                     $('#watchedCount').text(stats.watched);
                     $('#watchingCount').text(stats.watching);
                 }
-            }, 'json').fail(function() {
-                console.error('Failed to load user stats');
-            });
+            }, 'json');
         }
 
         function loadPopularPreview() {
@@ -874,12 +915,17 @@
         function displayMoviesPreview(movies, containerId) {
             const container = $('#' + containerId);
             container.empty();
+
             if (movies.length === 0) {
                 container.append('<p class="text-muted">No movies yet.</p>');
                 return;
             }
+
             movies.forEach(movie => {
-                const posterUrl = movie.poster_path ? TMDB_IMAGE_BASE_URL + movie.poster_path : 'https://via.placeholder.com/300x450/ff0000/ffffff.jpg?text=No+Poster';
+                const posterUrl = movie.poster_path
+                    ? TMDB_IMAGE_BASE_URL + movie.poster_path
+                    : 'https://via.placeholder.com/300x450/ff0000/ffffff.jpg?text=No+Poster';
+
                 const card = `
                     <div class="col-md-4 mb-3">
                         <div class="card h-100">
@@ -890,6 +936,7 @@
                         </div>
                     </div>
                 `;
+
                 container.append(card);
             });
         }
@@ -916,7 +963,10 @@
                 url: `${TMDB_BASE_URL}/search/movie`,
                 data: { api_key: TMDB_API_KEY, query: query },
                 success: function(data) {
-                    displayMovies(data.results);
+                    displayMovies(data.results || []);
+                },
+                error: function() {
+                    displayMovies([]);
                 }
             });
         }
@@ -924,10 +974,34 @@
         function displayMovies(movies) {
             const container = $('#moviesContainer');
             container.empty();
+
+            if (selectedGenre !== '') {
+                movies = movies.filter(movie =>
+                    Array.isArray(movie.genre_ids) &&
+                    movie.genre_ids.map(String).includes(String(selectedGenre))
+                );
+            }
+
+            if (!movies.length) {
+                container.html(`
+                    <div class="col-12">
+                        <div class="empty-results">
+                            <h4>No movies found for this genre.</h4>
+                        </div>
+                    </div>
+                `);
+                return;
+            }
+
             movies.forEach(movie => {
-                const posterUrl = movie.poster_path ? TMDB_IMAGE_BASE_URL + movie.poster_path : 'https://via.placeholder.com/300x450/ff0000/ffffff.jpg?text=No+Poster';
-                const buttonText = currentUser ? 'Add to Watchlist' : 'Login to Add';
-                const buttonClass = currentUser ? 'btn-primary add-to-watchlist' : 'btn-secondary';
+                const posterUrl = movie.poster_path
+                    ? TMDB_IMAGE_BASE_URL + movie.poster_path
+                    : 'https://via.placeholder.com/300x450/ff0000/ffffff.jpg?text=No+Poster';
+
+                const buttonHtml = currentUser
+                    ? `<button class="btn btn-primary btn-sm add-to-watchlist" data-movie='${JSON.stringify(movie)}'><i class="fas fa-bookmark me-1"></i>Add to Watchlist</button>`
+                    : `<button class="btn btn-secondary btn-sm login-to-add-btn"><i class="fas fa-sign-in-alt me-1"></i>Login to Add</button>`;
+
                 const card = `
                     <div class="col-md-3 mb-4">
                         <div class="card h-100">
@@ -935,23 +1009,28 @@
                             <div class="card-body d-flex flex-column">
                                 <h5 class="card-title">${movie.title}</h5>
                                 <p class="card-text flex-grow-1">${movie.overview ? movie.overview.substring(0, 100) + '...' : 'No description available.'}</p>
-                                <div class="mt-auto">
-                                    <span class="badge bg-warning text-dark me-2"><i class="fas fa-star"></i> ${movie.vote_average}</span>
-                                    <button class="btn ${buttonClass} btn-sm" data-movie='${JSON.stringify(movie)}'>${buttonText}</button>
+                                <div class="mt-auto d-flex align-items-center gap-2 flex-wrap">
+                                    <span class="badge bg-warning text-dark"><i class="fas fa-star"></i> ${movie.vote_average}</span>
+                                    ${buttonHtml}
                                 </div>
                             </div>
                         </div>
                     </div>
                 `;
+
                 container.append(card);
             });
         }
 
-        function addToWatchlist(movie) {
+        function addToWatchlist(movie, buttonEl) {
             if (!currentUser) {
                 $('#loginModal').modal('show');
                 return;
             }
+
+            const button = buttonEl;
+            button.disabled = true;
+            button.innerHTML = '<span class="loading-spinner me-1"></span>Adding...';
 
             $.post('../app/controllers/MovieController.php', {
                 action: 'add_to_watchlist',
@@ -964,9 +1043,19 @@
                 vote_average: movie.vote_average,
                 vote_count: movie.vote_count
             }, function(data) {
-                alert(data.message);
+                if (data.success) {
+                    button.innerHTML = '<i class="fas fa-check me-1"></i>Added';
+                    button.classList.remove('btn-primary');
+                    button.classList.add('btn-success');
+                } else {
+                    button.disabled = false;
+                    button.innerHTML = '<i class="fas fa-bookmark me-1"></i>Add to Watchlist';
+                    alert(data.message);
+                }
             }, 'json').fail(function() {
-                alert('Failed to add to watchlist: Server error');
+                button.disabled = false;
+                button.innerHTML = '<i class="fas fa-bookmark me-1"></i>Add to Watchlist';
+                alert('Failed to add to watchlist. Please try again.');
             });
         }
 
