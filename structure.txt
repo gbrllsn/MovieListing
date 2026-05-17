@@ -1,0 +1,48 @@
+.
+├── app
+│   ├── config
+│   │   └── config.php
+│   ├── controllers
+│   │   ├── admin
+│   │   │   └── addMovie.php
+│   │   ├── auth
+│   │   │   ├── login.php
+│   │   │   ├── logout.php
+│   │   │   └── register.php
+│   │   └── movies
+│   │       ├── updateStatus.php
+│   │       └── watchlist.php
+│   └── middleware
+│       └── AuthMiddleware.php
+├── index.php
+├── public
+│   ├── admin
+│   │   ├── addMovie.php
+│   │   ├── admin.php
+│   │   └── editMovie.php
+│   ├── assets
+│   │   ├── css
+│   │   │   └── style.css
+│   │   ├── guest.php
+│   │   ├── index.php
+│   │   ├── movies.php
+│   │   ├── profile.php
+│   │   └── uploads
+│   │       └── posters
+│   │           ├── avatarAang.webp
+│   │           ├── avatar.webp
+│   │           ├── avengersEndgame.webp
+│   │           ├── fightClub.webp
+│   │           ├── IMG_20260510_165108.jpg
+│   │           ├── ironMan.webp
+│   │           ├── twentyEightDaysLater.webp
+│   │           ├── twentyEightWeeksLater.webp
+│   │           ├── twentyEightYearsLater.webp
+│   │           └── worldWarZ.webp
+│   └── movie.php
+├── README.md
+├── sql
+│   └── schema.sql
+└── structure.txt
+
+15 directories, 31 files
